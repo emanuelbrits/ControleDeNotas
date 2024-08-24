@@ -1,0 +1,23 @@
+#tableProfessores {
+    color: rgb(255, 255, 255);
+}
+
+th {
+    color: rgb(255, 255, 255);
+}
+
+#botaoDisciplinas {
+    background-color: rgb(66, 86, 97);
+    width: 200px;
+}
+
+.form-control {
+    width: 400px;
+}
+
+.buscaModal {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+}
