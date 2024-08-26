@@ -4,3 +4,7 @@
     justify-content: end;
     gap: 10px;
 }
+
+#campoNome {
+    margin-bottom: 15px;
+}

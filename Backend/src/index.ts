@@ -1,11 +1,17 @@
 import Fastify from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import formbody from '@fastify/formbody';
+import cors from '@fastify/cors';
 
 const fastify = Fastify({ logger: true });
 const prisma = new PrismaClient();
 
 fastify.register(formbody);
+
+fastify.register(cors, {
+    origin: '*', // Pode alterar para o domínio específico do seu frontend, por exemplo: 'http://localhost:3000'
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+});
 
 //ALUNO
 
@@ -123,7 +129,7 @@ fastify.post('/professor', async (request, reply) => {
 // Read All (GET)
 fastify.get('/professores', async (request, reply) => {
     try {
-        const professores = await prisma.professor.findMany();
+        const professores = await prisma.professor.findMany({include: { disciplinas: true }});
         return professores;
     } catch (error) {
         console.error('Error fetching professores:', error);
