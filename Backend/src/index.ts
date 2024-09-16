@@ -306,30 +306,59 @@ fastify.post('/disciplina/:disciplinaId/alunos', async (request, reply) => {
         }
 
         // Verifica se a disciplina existe
-        const disciplina = await prisma.disciplina.findUnique({ where: { id: disciplinaId } });
+        const disciplina = await prisma.disciplina.findUnique({
+            where: { id: disciplinaId },
+            include: { alunos: true } // Inclui os alunos atuais
+        });
+
         if (!disciplina) {
             return reply.status(404).send({ error: 'Disciplina not found' });
         }
 
-        // Adiciona cada aluno à disciplina
-        const updatedDisciplina = await prisma.disciplina.update({
-            where: { id: disciplinaId },
-            data: {
-                alunos: {
-                    connect: alunos.map(alunoId => ({ id: alunoId }))
+        // IDs dos alunos atuais na disciplina
+        const alunosAtuaisIds = disciplina.alunos.map(aluno => aluno.id);
+
+        // Determina quais alunos devem ser adicionados e removidos
+        const alunosParaAdicionar = alunos.filter(alunoId => !alunosAtuaisIds.includes(alunoId));
+        const alunosParaRemover = alunosAtuaisIds.filter(alunoId => !alunos.includes(alunoId));
+
+        // Adiciona os novos alunos à disciplina
+        if (alunosParaAdicionar.length > 0) {
+            await prisma.disciplina.update({
+                where: { id: disciplinaId },
+                data: {
+                    alunos: {
+                        connect: alunosParaAdicionar.map(alunoId => ({ id: alunoId }))
+                    }
                 }
-            },
-            include: {
-                alunos: true
-            }
+            });
+        }
+
+        // Remove os alunos desmarcados da disciplina
+        if (alunosParaRemover.length > 0) {
+            await prisma.disciplina.update({
+                where: { id: disciplinaId },
+                data: {
+                    alunos: {
+                        disconnect: alunosParaRemover.map(alunoId => ({ id: alunoId }))
+                    }
+                }
+            });
+        }
+
+        // Obtém a disciplina atualizada com a lista final de alunos
+        const updatedDisciplina = await prisma.disciplina.findUnique({
+            where: { id: disciplinaId },
+            include: { alunos: true }
         });
 
         return updatedDisciplina;
     } catch (error) {
-        console.error('Error adding alunos to disciplina:', error);
-        reply.status(500).send({ error: `Failed to add alunos to disciplina: ${error.message}` });
+        console.error('Error updating alunos in disciplina:', error);
+        reply.status(500).send({ error: `Failed to update alunos in disciplina: ${error.message}` });
     }
 });
+
 
 // Remove aluno da disciplina
 fastify.delete('/disciplina/:disciplinaId/aluno/:alunoId', async (request, reply) => {
