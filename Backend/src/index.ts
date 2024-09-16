@@ -129,7 +129,7 @@ fastify.post('/professor', async (request, reply) => {
 // Read All (GET)
 fastify.get('/professores', async (request, reply) => {
     try {
-        const professores = await prisma.professor.findMany({include: { disciplinas: true }});
+        const professores = await prisma.professor.findMany({ include: { disciplinas: true } });
         return professores;
     } catch (error) {
         console.error('Error fetching professores:', error);
@@ -296,39 +296,27 @@ fastify.put('/disciplina/:id', async (request, reply) => {
 });
 
 // Add aluno na disciplina
-fastify.post('/disciplina/:disciplinaId/aluno/:alunoId', async (request, reply) => {
+fastify.post('/disciplina/:disciplinaId/alunos', async (request, reply) => {
     const disciplinaId = parseInt(request.params.disciplinaId);
-    const alunoId = parseInt(request.params.alunoId);
+    const { alunos }: { alunos: number[] } = request.body; // Recebe os IDs dos alunos pelo corpo da requisição
 
     try {
-        if (isNaN(disciplinaId) || isNaN(alunoId)) {
-            return reply.status(400).send({ error: 'Invalid IDs' });
+        if (isNaN(disciplinaId) || !Array.isArray(alunos)) {
+            return reply.status(400).send({ error: 'Invalid ID or body format' });
         }
 
-        // Verifica se a disciplina e o aluno existem
+        // Verifica se a disciplina existe
         const disciplina = await prisma.disciplina.findUnique({ where: { id: disciplinaId } });
-        const aluno = await prisma.aluno.findUnique({ where: { id: alunoId } });
-
-        if (!disciplina || !aluno) {
-            return reply.status(404).send({ error: 'Disciplina or Aluno not found' });
+        if (!disciplina) {
+            return reply.status(404).send({ error: 'Disciplina not found' });
         }
 
-        // Verifica quantas disciplinas o aluno já está matriculado
-        const alunoComDisciplinas = await prisma.aluno.findUnique({
-            where: { id: alunoId },
-            include: { disciplinas: true }
-        });
-
-        if (alunoComDisciplinas.disciplinas.length >= 4) {
-            return reply.status(400).send({ error: 'Aluno is already enrolled in 4 disciplines' });
-        }
-
-        // Adiciona o aluno à disciplina
+        // Adiciona cada aluno à disciplina
         const updatedDisciplina = await prisma.disciplina.update({
             where: { id: disciplinaId },
             data: {
                 alunos: {
-                    connect: { id: alunoId }
+                    connect: alunos.map(alunoId => ({ id: alunoId }))
                 }
             },
             include: {
@@ -338,8 +326,8 @@ fastify.post('/disciplina/:disciplinaId/aluno/:alunoId', async (request, reply) 
 
         return updatedDisciplina;
     } catch (error) {
-        console.error('Error adding aluno to disciplina:', error);
-        reply.status(500).send({ error: `Failed to add aluno to disciplina: ${error.message}` });
+        console.error('Error adding alunos to disciplina:', error);
+        reply.status(500).send({ error: `Failed to add alunos to disciplina: ${error.message}` });
     }
 });
 
@@ -380,7 +368,6 @@ fastify.delete('/disciplina/:disciplinaId/aluno/:alunoId', async (request, reply
         reply.status(500).send({ error: `Failed to remove aluno from disciplina: ${error.message}` });
     }
 });
-
 
 // Delete (DELETE)
 fastify.delete('/disciplina/:id', async (request, reply) => {

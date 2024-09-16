@@ -6,6 +6,7 @@ import ModalExcluirDisciplina from "./components/modalExcluirDisciplina";
 import "./styleDisciplinas.css";
 import { FaTrashAlt } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
+import ModalAlunosDisciiplina, { Aluno } from "./components/modalAlunosDisciplinas";
 
 export interface Disciplina {
     id: number;
@@ -99,6 +100,41 @@ function DisciplinasPage() {
         }
     };
 
+    const [selectedDisciplinaId, setSelectedDisciplinaId] = useState<number | null>(null);
+    const [alunosModalVisible, setAlunosModalVisible] = useState(false);
+
+    const handleOpenAlunosModal = (disciplinaId: number) => {
+        setSelectedDisciplinaId(disciplinaId);
+        setAlunosModalVisible(true);
+    };
+
+    const handleSaveAlunos = async (disciplinaId: number, alunosSelecionados: Aluno[]) => {
+        try {
+            const response = await fetch(`http://localhost:3000/disciplina/${disciplinaId}/alunos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ alunos: alunosSelecionados.map(aluno => aluno.id) }), // Envia os IDs dos alunos no corpo
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json(); // Captura a resposta de erro do servidor
+                throw new Error(`Erro ao atualizar alunos: ${errorData.error}`);
+            }
+
+            const updatedDisciplina = await response.json();
+            // Atualiza a lista de disciplinas na página
+            setDisciplinas((prevDisciplinas) =>
+                prevDisciplinas.map((disciplina) =>
+                    disciplina.id === disciplinaId ? updatedDisciplina : disciplina
+                )
+            );
+        } catch (error) {
+            console.error('Erro ao salvar alunos:', error);
+        }
+    };
+
     return (
         <>
             <NavBar />
@@ -149,6 +185,7 @@ function DisciplinasPage() {
                                             {disciplina.alunos.map((aluno) => (
                                                 <p key={aluno.id}>{aluno.nome}</p>
                                             ))}
+                                            <button onClick={() => handleOpenAlunosModal(disciplina.id)}>Atualizar Alunos</button>
                                         </div>
                                     </div>
                                 </td>
@@ -173,6 +210,15 @@ function DisciplinasPage() {
                         </button>
                     </div>
                 )}
+                {alunosModalVisible && selectedDisciplinaId && (
+                    <ModalAlunosDisciiplina
+                        disciplinaId={selectedDisciplinaId}
+                        alunosDisciplina={disciplinas.find(d => d.id === selectedDisciplinaId)?.alunos || []} // Certifique-se de que os alunos sejam passados corretamente
+                        onSave={handleSaveAlunos}
+                        onClose={() => setAlunosModalVisible(false)}
+                    />
+                )}
+
             </div>
         </>
     );
