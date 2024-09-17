@@ -57,7 +57,7 @@ function DisciplinasPage() {
     }, []);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5);
+    const [itemsPerPage] = useState(8);
     const [searchTerm, setSearchTerm] = useState('');
 
     const indexOfLastItem = currentPage * itemsPerPage;

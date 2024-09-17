@@ -6,6 +6,7 @@ import './styleProfessoresPage.css';
 import ModalExcluirProfessor from "./components/modalExcluirProfessor";
 import { MdEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export interface Professor {
   id: number;
@@ -40,7 +41,7 @@ function ProfessoresPage() {
   }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState('');
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -126,9 +127,15 @@ function ProfessoresPage() {
                   <div className="collapse" id="botaoDisciplinas">
                     <input type="checkbox" />
                     <div className="collapse-title text-xl font-small">Ver Disciplinas</div>
-                    <div className="collapse-content">
+                    <div className="collapse-content" id="disciplinas">
                       {professor.disciplinas.map((disciplina) => (
-                        <p key={disciplina.id}>{disciplina.nome}</p>
+                        <Link
+                          to={`/disciplinas/${disciplina.id}`}
+                          key={disciplina.id}
+                          className="text-blue-500 hover:underline"
+                        >
+                          {disciplina.nome}
+                        </Link>
                       ))}
                     </div>
                   </div>

@@ -33,3 +33,9 @@ th {
     align-items: center;
     gap: 10px;
 }
+
+#disciplinas {
+    display: flex;
+    flex-direction: column;
+    font-size: large;
+}

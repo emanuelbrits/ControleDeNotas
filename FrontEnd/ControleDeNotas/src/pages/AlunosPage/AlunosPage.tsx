@@ -7,6 +7,7 @@ import ModalEditAluno from "./components/EditAlunoModal";
 import ModalExcluirAluno from "./components/DeleteAlunoModal";
 import ModalAluno from "./components/ModalAddDisciplina";
 import './styleAlunos.css';
+import { Link } from "react-router-dom";
 
 interface Disciplina {
     id: number;
@@ -24,7 +25,7 @@ const AlunosPage: React.FC = () => {
     const [alunos, setAlunos] = useState<Aluno[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10);
+    const [itemsPerPage] = useState(8);
     const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
     const [modalType, setModalType] = useState<'edit' | 'delete' | null>(null);
 
@@ -144,9 +145,15 @@ const AlunosPage: React.FC = () => {
                                         <div className="collapse" id="botaoDisciplinas">
                                             <input type="checkbox" />
                                             <div className="collapse-title text-xl font-small">Ver Disciplinas</div>
-                                            <div className="collapse-content">
+                                            <div className="collapse-content" id="disciplinas">
                                                 {aluno.disciplinas.map((disciplina) => (
-                                                    <p key={disciplina.id}>{disciplina.nome}</p>
+                                                    <Link
+                                                        to={`/disciplinas/${disciplina.id}`}
+                                                        key={disciplina.id}
+                                                        className="text-blue-500 hover:underline"
+                                                    >
+                                                        {disciplina.nome}
+                                                    </Link>
                                                 ))}
                                             </div>
                                         </div>

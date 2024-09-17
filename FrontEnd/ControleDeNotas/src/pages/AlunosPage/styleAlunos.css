@@ -33,3 +33,9 @@
 th {
     color: rgb(255, 255, 255);
 }
+
+#disciplinas {
+    display: flex;
+    flex-direction: column;
+    font-size: large;
+}
