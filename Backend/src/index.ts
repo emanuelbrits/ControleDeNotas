@@ -35,7 +35,7 @@ fastify.post('/aluno', async (request, reply) => {
 // Read All (GET)
 fastify.get('/alunos', async (request, reply) => {
     try {
-        const alunos = await prisma.aluno.findMany();
+        const alunos = await prisma.aluno.findMany({ include: { disciplinas: true } });
         return alunos;
     } catch (error) {
         console.error('Error fetching alunos:', error);

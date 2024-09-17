@@ -1,0 +1,35 @@
+#tableAlunos {
+    color: rgb(255, 255, 255);
+}
+
+#botaoDisciplinas {
+    background-color: rgb(66, 86, 97);
+    width: 200px;
+}
+
+.form-control {
+    width: 400px;
+}
+
+.buscaModal {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#botoesEditarExcluir {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+th {
+    color: rgb(255, 255, 255);
+}
