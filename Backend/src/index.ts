@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import formbody from '@fastify/formbody';
 import cors from '@fastify/cors';
@@ -240,25 +240,37 @@ fastify.get('/disciplinas', async (request, reply) => {
 });
 
 // Read One (GET)
-fastify.get('/disciplina/:id', async (request, reply) => {
-    const id = parseInt(request.params.id);
+fastify.get('/disciplina/:disciplinaId', async (request, reply) => {
+    const disciplinaId = parseInt(request.params.disciplinaId);
+
     try {
         const disciplina = await prisma.disciplina.findUnique({
-            where: { id },
+            where: { id: disciplinaId },
             include: {
-                alunos: true, // Incluindo alunos na resposta
-                professor: true, // Incluindo professor na resposta
-            },
+                professor: true, // Para incluir os detalhes do professor
+                alunos: {
+                    include: {
+                        boletins: {
+                            where: {
+                                disciplinaId: disciplinaId // Pega o boletim apenas da disciplina específica
+                            }
+                        }
+                    }
+                }
+            }
         });
+
         if (!disciplina) {
             return reply.status(404).send({ error: 'Disciplina not found' });
         }
+
         return disciplina;
     } catch (error) {
-        console.error('Error fetching disciplina:', error);
-        reply.status(500).send({ error: 'Failed to fetch disciplina' });
+        console.error('Error fetching disciplina details:', error);
+        reply.status(500).send({ error: `Failed to fetch disciplina details: ${error.message}` });
     }
 });
+
 
 // Update (PUT)
 fastify.put('/disciplina/:id', async (request, reply) => {
@@ -332,6 +344,19 @@ fastify.post('/disciplina/:disciplinaId/alunos', async (request, reply) => {
                     }
                 }
             });
+
+            // Cria boletins para os novos alunos com notas iniciando em 0
+            for (const alunoId of alunosParaAdicionar) {
+                await prisma.boletim.create({
+                    data: {
+                        alunoId: alunoId,
+                        disciplinaId: disciplinaId,
+                        nota1: 0,
+                        nota2: 0,
+                        nota3: 0
+                    }
+                });
+            }
         }
 
         // Remove os alunos desmarcados da disciplina
@@ -342,6 +367,14 @@ fastify.post('/disciplina/:disciplinaId/alunos', async (request, reply) => {
                     alunos: {
                         disconnect: alunosParaRemover.map(alunoId => ({ id: alunoId }))
                     }
+                }
+            });
+
+            // Remove os boletins dos alunos desmarcados
+            await prisma.boletim.deleteMany({
+                where: {
+                    alunoId: { in: alunosParaRemover },
+                    disciplinaId: disciplinaId
                 }
             });
         }
@@ -391,12 +424,53 @@ fastify.delete('/disciplina/:disciplinaId/aluno/:alunoId', async (request, reply
             }
         });
 
-        return updatedDisciplina;
+        // Exclui o boletim relacionado à disciplina e ao aluno
+        await prisma.boletim.deleteMany({
+            where: {
+                alunoId: alunoId,
+                disciplinaId: disciplinaId
+            }
+        });
+
+        return reply.status(200).send(updatedDisciplina);
     } catch (error) {
         console.error('Error removing aluno from disciplina:', error);
         reply.status(500).send({ error: `Failed to remove aluno from disciplina: ${error.message}` });
     }
 });
+
+fastify.put('/disciplina/:disciplinaId/boletim/:alunoId', async (request, reply) => {
+    const disciplinaId = parseInt(request.params.disciplinaId);
+    const alunoId = parseInt(request.params.alunoId);
+    const { nota1, nota2, nota3 } = request.body;
+
+    try {
+        if (isNaN(disciplinaId) || isNaN(alunoId) || typeof nota1 !== 'number' || typeof nota2 !== 'number' || typeof nota3 !== 'number') {
+            return reply.status(400).send({ error: 'Invalid input' });
+        }
+
+        // Atualiza as notas no boletim do aluno
+        const updatedBoletim = await prisma.boletim.update({
+            where: {
+                alunoId_disciplinaId: {
+                    alunoId: alunoId,
+                    disciplinaId: disciplinaId
+                }
+            },
+            data: {
+                nota1: nota1,
+                nota2: nota2,
+                nota3: nota3
+            }
+        });
+
+        return updatedBoletim;
+    } catch (error) {
+        console.error('Error updating boletim:', error);
+        reply.status(500).send({ error: `Failed to update boletim: ${error.message}` });
+    }
+});
+
 
 // Delete (DELETE)
 fastify.delete('/disciplina/:id', async (request, reply) => {
@@ -412,6 +486,115 @@ fastify.delete('/disciplina/:id', async (request, reply) => {
             return reply.status(404).send({ error: 'Disciplina not found' });
         }
         return reply.status(500).send({ error: 'Failed to delete disciplina' });
+    }
+});
+
+// Criar um boletim
+fastify.post('/boletim', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { alunoId, disciplinaId, nota1, nota2, nota3 } = request.body as {
+        alunoId: number;
+        disciplinaId: number;
+        nota1: number;
+        nota2: number;
+        nota3: number;
+    };
+
+    try {
+        const boletim = await prisma.boletim.create({
+            data: {
+                alunoId,
+                disciplinaId,
+                nota1,
+                nota2,
+                nota3,
+            },
+        });
+        return reply.status(201).send(boletim);
+    } catch (error) {
+        return reply.status(500).send({ error: 'Erro ao criar boletim' });
+    }
+});
+
+// Ler boletim por aluno e disciplina
+fastify.get('/boletim/:alunoId/:disciplinaId', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { alunoId, disciplinaId } = request.params as {
+        alunoId: string;
+        disciplinaId: string;
+    };
+
+    try {
+        const boletim = await prisma.boletim.findUnique({
+            where: {
+                alunoId_disciplinaId: {
+                    alunoId: parseInt(alunoId),
+                    disciplinaId: parseInt(disciplinaId),
+                },
+            },
+        });
+
+        if (!boletim) {
+            return reply.status(404).send({ error: 'Boletim não encontrado' });
+        }
+
+        return reply.status(200).send(boletim);
+    } catch (error) {
+        return reply.status(500).send({ error: 'Erro ao buscar boletim' });
+    }
+});
+
+// Atualizar um boletim
+fastify.put('/boletim/:alunoId/:disciplinaId', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { alunoId, disciplinaId } = request.params as {
+        alunoId: string;
+        disciplinaId: string;
+    };
+    const { nota1, nota2, nota3 } = request.body as {
+        nota1: number;
+        nota2: number;
+        nota3: number;
+    };
+
+    try {
+        const boletim = await prisma.boletim.update({
+            where: {
+                alunoId_disciplinaId: {
+                    alunoId: parseInt(alunoId),
+                    disciplinaId: parseInt(disciplinaId),
+                },
+            },
+            data: {
+                nota1,
+                nota2,
+                nota3,
+            },
+        });
+
+        return reply.status(200).send(boletim);
+    } catch (error) {
+        return reply.status(500).send({ error: 'Erro ao atualizar boletim' });
+    }
+});
+
+// Excluir um boletim
+fastify.delete('/boletim/:alunoId/:disciplinaId', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { alunoId, disciplinaId } = request.params as {
+        alunoId: string;
+        disciplinaId: string;
+    };
+
+    try {
+        await prisma.boletim.delete({
+            where: {
+                alunoId_disciplinaId: {
+                    alunoId: parseInt(alunoId),
+                    disciplinaId: parseInt(disciplinaId),
+                },
+            },
+        });
+
+        return reply.status(204).send();
+    } catch (error) {
+        return reply.status(500).send({ error: 'Erro ao excluir boletim' });
     }
 });
 

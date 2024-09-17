@@ -19,12 +19,26 @@ model Disciplina {
   nome        String
   professor   Professor          @relation(fields: [professorId], references: [id])
   professorId Int
-  alunos      Aluno[]
+  alunos      Aluno[]            @relation("AlunoDisciplina")
+  boletins    Boletim[]
 }
 
 model Aluno {
   id          Int                @id @default(autoincrement())
   nome        String
   email       String             @unique
-  disciplinas Disciplina[]
+  disciplinas Disciplina[]       @relation("AlunoDisciplina")
+  boletins    Boletim[]
+}
+
+model Boletim {
+  aluno       Aluno              @relation(fields: [alunoId], references: [id])
+  alunoId     Int
+  disciplina  Disciplina         @relation(fields: [disciplinaId], references: [id])
+  disciplinaId Int
+  nota1       Float
+  nota2       Float
+  nota3       Float
+
+  @@id([alunoId, disciplinaId]) // Chave primária composta
 }

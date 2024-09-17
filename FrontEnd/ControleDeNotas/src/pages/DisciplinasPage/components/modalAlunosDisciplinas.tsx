@@ -34,8 +34,8 @@ function ModalAlunosDisciiplina({ disciplinaId, alunosDisciplina, onSave, onClos
         const alreadySelected = alunosSelecionados.some((a) => a.id === aluno.id);
         setAlunosSelecionados((prevState) =>
             alreadySelected
-                ? prevState.filter((a) => a.id !== aluno.id) // Remove se já estiver selecionado
-                : [...prevState, aluno] // Adiciona se não estiver selecionado
+                ? prevState.filter((a) => a.id !== aluno.id) 
+                : [...prevState, aluno]
         );
     };
 

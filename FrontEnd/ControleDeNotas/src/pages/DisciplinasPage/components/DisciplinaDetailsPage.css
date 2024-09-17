@@ -1,0 +1,13 @@
+#inputNotas {
+    max-width: 10%;
+}
+
+/* Garantir que o layout não quebre */
+.table-container {
+    position: relative;
+    overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
+}
+
+.table {
+    table-layout: auto; /* Permite que as colunas se ajustem ao conteúdo */
+}
