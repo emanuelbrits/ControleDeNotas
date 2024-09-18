@@ -7,6 +7,7 @@ import "./styleDisciplinas.css";
 import { FaTrashAlt } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import ModalAlunosDisciiplina, { Aluno } from "./components/modalAlunosDisciplinas";
+import { Link, useNavigate } from "react-router-dom";
 
 export interface Disciplina {
     id: number;
@@ -108,6 +109,11 @@ function DisciplinasPage() {
         setAlunosModalVisible(true);
     };
 
+    const handleVerDisciplina = (idDisciplina: number) => {
+        const navigate = useNavigate()
+        navigate(`/disciplinas/${idDisciplina}`)
+    };
+
     const handleSaveAlunos = async (disciplinaId: number, alunosSelecionados: Aluno[]) => {
         try {
             const response = await fetch(`http://localhost:3000/disciplina/${disciplinaId}/alunos`, {
@@ -175,7 +181,12 @@ function DisciplinasPage() {
                     <tbody>
                         {currentItems.map((disciplina) => (
                             <tr key={disciplina.id}>
-                                <td>{disciplina.nome}</td>
+                                <td id="VerDisciplina">
+                                    {disciplina.nome}
+                                    <button className="btn" id="botaoVerDisciplina"><Link to={`/disciplinas/${disciplina.id}`}>
+                                        Ver Disciplina
+                                    </Link></button>
+                                </td>
                                 <td>{disciplina.professor?.nome || 'Recarregue a página'}</td>
                                 <td>
                                     <div className="collapse" id="botaoAlunos">

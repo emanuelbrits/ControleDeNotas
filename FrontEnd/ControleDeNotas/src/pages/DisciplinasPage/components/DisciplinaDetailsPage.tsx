@@ -103,6 +103,8 @@ const DisciplinaDetailsPage: React.FC = () => {
                                         <th>Nota 1</th>
                                         <th>Nota 2</th>
                                         <th>Nota 3</th>
+                                        <th>Media</th>
+                                        <th>Situacao</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -139,6 +141,18 @@ const DisciplinaDetailsPage: React.FC = () => {
                                                             }
                                                         />
                                                     </td>
+                                                    <td>{((aluno.boletins[0]?.nota1 + aluno.boletins[0]?.nota2 + aluno.boletins[0]?.nota3) / 3).toFixed(2)}</td>
+                                                    <td>
+                                                        {((aluno.boletins[0]?.nota1 + aluno.boletins[0]?.nota2 + aluno.boletins[0]?.nota3) / 3) >= 7 ? (
+                                                            <>
+                                                                <p>Aprovado</p>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <p>Reprovado</p>
+                                                            </>
+                                                        )}
+                                                    </td>
                                                     <td>
                                                         <button onClick={() => handleSave(aluno.id)}>Salvar</button>
                                                     </td>
@@ -148,6 +162,18 @@ const DisciplinaDetailsPage: React.FC = () => {
                                                     <td>{aluno.boletins[0]?.nota1 ?? 0}</td>
                                                     <td>{aluno.boletins[0]?.nota2 ?? 0}</td>
                                                     <td>{aluno.boletins[0]?.nota3 ?? 0}</td>
+                                                    <td>{((aluno.boletins[0]?.nota1 + aluno.boletins[0]?.nota2 + aluno.boletins[0]?.nota3) / 3).toFixed(2)}</td>
+                                                    <td>
+                                                        {((aluno.boletins[0]?.nota1 + aluno.boletins[0]?.nota2 + aluno.boletins[0]?.nota3) / 3) >= 7 ? (
+                                                            <>
+                                                                <p>Aprovado</p>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <p>Reprovado</p>
+                                                            </>
+                                                        )}
+                                                    </td>
                                                     <td>
                                                         <button onClick={() => handleEdit(aluno.id)}>Editar</button>
                                                     </td>

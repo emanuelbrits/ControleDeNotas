@@ -50,7 +50,15 @@ fastify.get('/aluno/:id', async (request, reply) => {
         const aluno = await prisma.aluno.findUnique({
             where: { id },
             include: {
-                disciplinas: true
+                disciplinas: {
+                    include: {
+                        boletins: {
+                            where: {
+                                alunoId: id // Pega o boletim apenas da disciplina específica
+                            }
+                        }
+                    }
+                }
             }
         });
         if (!aluno) {

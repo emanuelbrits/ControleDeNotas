@@ -27,3 +27,16 @@ th {
     justify-content: center;
     gap: 10px;
 }
+
+#VerDisciplina {
+    display: flex;
+    flex-direction: column;
+    gap: 10%;
+}
+
+#botaoVerDisciplina {
+    max-width: 150px;
+    margin-top: 5px;
+    background-color: rgb(66, 86, 97);
+    color: white;
+}

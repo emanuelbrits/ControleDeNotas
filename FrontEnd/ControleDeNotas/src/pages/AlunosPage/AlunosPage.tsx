@@ -139,7 +139,12 @@ const AlunosPage: React.FC = () => {
                         <tbody>
                             {currentItems.map((aluno) => (
                                 <tr key={aluno.id}>
-                                    <td>{aluno.nome}</td>
+                                    <td id="VerAluno">
+                                        {aluno.nome}
+                                        <button className="btn" id="botaoBoletim"><Link to={`/aluno/${aluno.id}`} id="areaBotao">
+                                            Ver Boletim
+                                        </Link></button>
+                                    </td>
                                     <td>{aluno.email}</td>
                                     <td>
                                         <div className="collapse" id="botaoDisciplinas">

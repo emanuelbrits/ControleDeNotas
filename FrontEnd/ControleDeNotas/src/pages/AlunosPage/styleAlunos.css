@@ -39,3 +39,25 @@ th {
     flex-direction: column;
     font-size: large;
 }
+
+#VerAluno {
+    display: flex;
+    flex-direction: column;
+    gap: 10%;
+}
+
+#botaoBoletim {
+    max-width: 150px;
+    margin-top: 5px;
+    background-color: rgb(66, 86, 97);
+    color: white;
+}
+
+#areaBotao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
