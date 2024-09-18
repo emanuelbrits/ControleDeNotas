@@ -342,6 +342,37 @@ fastify.post('/disciplina/:disciplinaId/alunos', async (request, reply) => {
         const alunosParaAdicionar = alunos.filter(alunoId => !alunosAtuaisIds.includes(alunoId));
         const alunosParaRemover = alunosAtuaisIds.filter(alunoId => !alunos.includes(alunoId));
 
+        // Verifica se algum aluno já está em 4 disciplinas
+        for (const alunoId of alunosParaAdicionar) {
+            // Busca o nome do aluno pelo ID
+            const aluno = await prisma.aluno.findUnique({
+                where: { id: alunoId },
+                select: { nome: true } // Apenas o nome é necessário
+            });
+
+            if (!aluno) {
+                return reply.status(404).send({
+                    error: `Aluno com ID ${alunoId} não encontrado.`
+                });
+            }
+
+            // Conta quantas disciplinas o aluno já está matriculado
+            const countDisciplinas = await prisma.disciplina.count({
+                where: {
+                    alunos: {
+                        some: { id: alunoId }
+                    }
+                }
+            });
+
+            // Verifica se o aluno já está em 4 disciplinas
+            if (countDisciplinas >= 4) {
+                return reply.status(400).send({
+                    error: `Aluno ${aluno.nome} já está em 4 disciplinas. Não pode ser adicionado a mais disciplinas.`
+                });
+            }
+        }
+
         // Adiciona os novos alunos à disciplina
         if (alunosParaAdicionar.length > 0) {
             await prisma.disciplina.update({
@@ -399,6 +430,7 @@ fastify.post('/disciplina/:disciplinaId/alunos', async (request, reply) => {
         reply.status(500).send({ error: `Failed to update alunos in disciplina: ${error.message}` });
     }
 });
+
 
 
 // Remove aluno da disciplina

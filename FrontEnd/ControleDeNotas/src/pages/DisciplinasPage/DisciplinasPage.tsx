@@ -126,6 +126,10 @@ function DisciplinasPage() {
 
             if (!response.ok) {
                 const errorData = await response.json(); // Captura a resposta de erro do servidor
+                // Se o erro for relacionado ao limite de disciplinas
+                if (errorData.error.includes('já está em 4 disciplinas')) {
+                    window.alert(errorData.error); // Exibe um alerta com a mensagem de erro
+                }
                 throw new Error(`Erro ao atualizar alunos: ${errorData.error}`);
             }
 
@@ -140,6 +144,7 @@ function DisciplinasPage() {
             console.error('Erro ao salvar alunos:', error);
         }
     };
+
 
     return (
         <>
