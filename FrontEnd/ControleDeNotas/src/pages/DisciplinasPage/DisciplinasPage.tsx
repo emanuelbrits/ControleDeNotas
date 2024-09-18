@@ -79,7 +79,8 @@ function DisciplinasPage() {
 
     const handleClickEdit = (disciplina: Disciplina) => {
         setDisciplinaAtual(disciplina);
-        document.getElementById('my_modal_2')?.showModal();
+        const modal = document.getElementById('my_modal_2') as HTMLDialogElement;
+        modal?.showModal();
     };
 
     const handleDeleteDisciplina = async (id: number) => {
@@ -209,7 +210,8 @@ function DisciplinasPage() {
                                     <button className="btn" onClick={() => handleClickEdit(disciplina)}><MdEdit /></button>
                                     <button className="btn" onClick={() => {
                                         setDisciplinaAtual(disciplina);
-                                        document.getElementById('modalExcluirDisciplina')?.showModal();
+                                        const modal = document.getElementById('modalExcluirDisciplina') as HTMLDialogElement;
+                                        modal?.showModal();
                                     }}><FaTrashAlt /></button>
                                 </td>
                             </tr>

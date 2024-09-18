@@ -37,9 +37,11 @@ function ModalAluno({ onSave }: ModalAlunoProps) {
     if (modal) (modal as HTMLDialogElement).close();
   };
 
+  const modaladdaluno = document.getElementById('modal-add-aluno') as HTMLDialogElement;
+
   return (
     <>
-      <button className="btn" onClick={() => document.getElementById('modal-add-aluno').showModal()}>Adicionar Aluno</button>
+      <button className="btn" onClick={() => modaladdaluno.showModal()}>Adicionar Aluno</button>
       <dialog id="modal-add-aluno" className="modal">
         <div className="modal-box">
           <label className="input input-bordered flex items-center gap-2" id='campoNome'>

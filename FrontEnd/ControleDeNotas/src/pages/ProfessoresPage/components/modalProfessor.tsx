@@ -38,9 +38,12 @@ function ModalProfessor({ onSave }: ModalProfessorProps) {
     if (modal) (modal as HTMLDialogElement).close();
   };
 
+  const modal = document.getElementById('my_modal_1') as HTMLDialogElement;
+  modal?.showModal();
+
   return (
     <>
-      <button className="btn" onClick={() => document.getElementById('my_modal_1').showModal()}>Adicionar Professor</button>
+      <button className="btn" onClick={() => modal?.showModal()}>Adicionar Professor</button>
       <dialog id="my_modal_1" className="modal">
         <div className="modal-box">
           <label className="input input-bordered flex items-center gap-2" id='campoNome'>

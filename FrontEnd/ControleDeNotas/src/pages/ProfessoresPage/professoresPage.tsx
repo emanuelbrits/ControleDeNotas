@@ -62,7 +62,8 @@ function ProfessoresPage() {
 
   const handleClickEdit = (professor: Professor) => {
     setProfessorAtual(professor);
-    document.getElementById('my_modal_2').showModal();
+    const modal = document.getElementById('my_modal_2') as HTMLDialogElement;
+    modal?.showModal();
   };
 
   const handleDeleteProfessor = async (id: number) => {
@@ -144,7 +145,8 @@ function ProfessoresPage() {
                   <button className="btn" onClick={() => handleClickEdit(professor)}><MdEdit /></button>
                   <button className="btn" onClick={() => {
                     setProfessorAtual(professor);
-                    document.getElementById('my_modal_3').showModal();
+                    const modal = document.getElementById('my_modal_3') as HTMLDialogElement;
+                    modal?.showModal();
                   }}><FaTrashAlt /></button>
                 </td>
               </tr>

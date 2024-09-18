@@ -64,9 +64,11 @@ function ModalDisciplina({ onSave }: ModalDisciplinaProps) {
         }
     };
 
+    const modalmy_modal_1 = document.getElementById('modalExcluirDisciplina') as HTMLDialogElement;
+
     return (
         <>
-            <button className="btn" onClick={() => document.getElementById('my_modal_1')?.showModal()}>
+            <button className="btn" onClick={() => modalmy_modal_1?.showModal()}>
                 Adicionar Disciplina
             </button>
             <dialog id="my_modal_1" className="modal">

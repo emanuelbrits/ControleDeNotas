@@ -55,7 +55,8 @@ const AlunosPage: React.FC = () => {
 
     const handleClickEdit = (aluno: Aluno) => {
         setSelectedAluno(aluno);
-        document.getElementById('modal-edit-aluno').showModal();
+        const modal = document.getElementById('modal-edit-aluno') as HTMLDialogElement;
+        modal?.showModal();
     };
 
     const handleClickDelete = (aluno: Aluno) => {
@@ -167,7 +168,8 @@ const AlunosPage: React.FC = () => {
                                         <button className="btn" onClick={() => handleClickEdit(aluno)}><MdEdit /></button>
                                         <button className="btn" onClick={() => {
                                             setSelectedAluno(aluno);
-                                            document.getElementById('modal-excluir-aluno').showModal();
+                                            const modal = document.getElementById('modal-excluir-aluno') as HTMLDialogElement;
+                                            modal?.showModal();
                                         }}><FaTrashAlt /></button>
                                     </td>
                                 </tr>
