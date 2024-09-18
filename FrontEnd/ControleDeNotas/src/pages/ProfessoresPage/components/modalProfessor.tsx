@@ -39,7 +39,6 @@ function ModalProfessor({ onSave }: ModalProfessorProps) {
   };
 
   const modal = document.getElementById('my_modal_1') as HTMLDialogElement;
-  modal?.showModal();
 
   return (
     <>
