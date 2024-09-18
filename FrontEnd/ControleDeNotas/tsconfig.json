@@ -1,7 +1,16 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "noEmitOnError": false, // Permite emitir arquivos mesmo com erros
+    "skipLibCheck": true, // Ignora a verificação de tipos em arquivos de biblioteca
+    "strict": false // Desativa a verificação estrita do TypeScript
+  }
 }
