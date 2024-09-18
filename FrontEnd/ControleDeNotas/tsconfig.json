@@ -9,8 +9,7 @@
     }
   ],
   "compilerOptions": {
-    "noEmitOnError": false, // Permite emitir arquivos mesmo com erros
-    "skipLibCheck": true, // Ignora a verificação de tipos em arquivos de biblioteca
-    "strict": false // Desativa a verificação estrita do TypeScript
+    "noEmitOnError": false,
+    // Outras opções do TypeScript
   }
 }
